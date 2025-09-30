@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Telephone Game</title>
+    <title>AI Telephone</title>
     <style>
         * {
             margin: 0;
@@ -102,44 +102,29 @@
             border-color: #3498db;
         }
 
-        .api-key-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #3498db;
-        }
-
-        .api-key-section h3 {
-            margin-bottom: 10px;
-            color: #2c3e50;
-            font-size: 18px;
-        }
-
-        .api-key-section p {
-            color: #666;
-            margin-bottom: 10px;
-        }
-
         button {
-            background: #3498db;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             padding: 12px 24px;
             border-radius: 8px;
             font-size: 16px;
+            font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
             width: 100%;
         }
 
         button:hover:not(:disabled) {
-            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
         button:disabled {
             background: #bdc3c7;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .game-area {
@@ -149,82 +134,74 @@
         .step {
             margin-bottom: 30px;
             padding: 20px;
-            border: 2px solid #e1e5e9;
+            background: #f8f9fa;
             border-radius: 8px;
-            background: #fafbfc;
+            border-left: 4px solid #3498db;
         }
 
-        .step-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .step h3 {
             margin-bottom: 15px;
-        }
-
-        .step-title {
-            font-size: 18px;
-            font-weight: 600;
             color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .step-status {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .status-waiting {
-            background: #f39c12;
-            color: white;
-        }
-
-        .status-processing {
+        .step-number {
             background: #3498db;
             color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
         }
 
-        .status-complete {
-            background: #27ae60;
-            color: white;
-        }
-
-        .status-error {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .step-content {
-            margin-top: 15px;
-        }
-
-        .text-content {
-            background: white;
-            padding: 15px;
-            border-radius: 6px;
-            border-left: 4px solid #3498db;
-            margin-bottom: 15px;
-            font-style: italic;
-        }
-
-        .image-content {
-            text-align: center;
-        }
-
-        .image-content img {
+        .step img {
             max-width: 100%;
             height: auto;
             border-radius: 8px;
+            margin: 10px 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #666;
+        .prompt {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e1e5e9;
+            font-style: italic;
+            margin: 10px 0;
         }
 
-        .spinner {
+        .status {
+            color: #666;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
+        .error {
+            color: #e74c3c;
+            background: #fdf2f2;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #f5c6cb;
+            margin: 10px 0;
+        }
+
+        .success {
+            color: #27ae60;
+            background: #f2f8f5;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #c3e6cb;
+            margin: 10px 0;
+        }
+
+        .loading {
             display: inline-block;
             width: 20px;
             height: 20px;
@@ -240,33 +217,58 @@
             100% { transform: rotate(360deg); }
         }
 
-        .error {
-            background: #ffeaea;
-            border: 1px solid #e74c3c;
-            color: #c0392b;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
+        .final-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 30px;
         }
 
-        .hidden {
-            display: none;
+        .final-result h2 {
+            margin-bottom: 15px;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .comparison div {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .comparison h4 {
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 600px) {
+            .model-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .comparison {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎭 AI Telephone Game</h1>
+        <h1>📞 AI Telephone ☎️</h1>
         <p class="description">
-            Enter a text prompt and watch it transform through AI! Your text becomes an image, 
-            then an AI analyzes that image to guess the original prompt. This process repeats 4 times.
+            Enter a text prompt and watch a pair of models take turns 
+            making the prompt into an image and trying to guess the image prompt.
         </p>
-
-        <div class="api-key-section">
-            <h3>API Keys Setup</h3>
-            <p><strong>Runware API Key:</strong> <input type="text" id="runwareKey" placeholder="Enter your Runware API key"></p>
-            <p><strong>OpenRouter API Key:</strong> <input type="text" id="openrouterKey" placeholder="Enter your OpenRouter API key (or leave blank if using env variable)"></p>
-        </div>
 
         <div class="model-selection">
             <div class="model-row">
@@ -289,142 +291,75 @@
         </div>
 
         <div class="input-section">
-            <label for="initialPrompt">Initial Prompt:</label>
-            <input type="text" id="initialPrompt" placeholder="Enter your starting prompt (e.g., 'a cow jumping over the moon')" maxlength="500">
+            <label for="initialPrompt">Enter your starting prompt:</label>
+            <input type="text" id="initialPrompt" placeholder="e.g., A cat wearing a space helmet floating in zero gravity">
         </div>
 
-        <button id="startGame" onclick="startTelephoneGame()">Start Telephone Game</button>
+        <button id="startButton" onclick="startGame()">Start Telephone Game</button>
 
-        <div id="gameArea" class="game-area hidden">
-            <!-- Steps will be dynamically added here -->
-        </div>
+        <div id="gameArea" class="game-area"></div>
     </div>
 
-    <!-- Local development config (optional) -->
     <script src="config.js"></script>
-    
-    <!-- No SDK needed - using direct API calls -->
     <script>
-        console.log('Using Runware API directly (no SDK required)');
-    </script>
-    <script>
-        let gameState = {
-            currentStep: 0,
-            steps: [],
-            runware: null
-        };
+        let gameInProgress = false;
 
-        function createStepElement(stepNumber, type, title) {
-            const step = document.createElement('div');
-            step.className = 'step';
-            step.id = `step-${stepNumber}`;
-            
-            step.innerHTML = `
-                <div class="step-header">
-                    <div class="step-title">${title}</div>
-                    <div class="step-status status-waiting">Waiting</div>
-                </div>
-                <div class="step-content">
-                    <div class="loading hidden">
-                        <span class="spinner"></span>Processing...
-                    </div>
-                </div>
-            `;
-            
-            return step;
-        }
-
-        function updateStepStatus(stepNumber, status, content = null) {
-            const step = document.getElementById(`step-${stepNumber}`);
-            const statusElement = step.querySelector('.step-status');
-            const contentElement = step.querySelector('.step-content');
-            const loadingElement = step.querySelector('.loading');
-            
-            // Update status
-            statusElement.className = `step-status status-${status}`;
-            statusElement.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-            
-            // Handle loading state
-            if (status === 'processing') {
-                loadingElement.classList.remove('hidden');
-            } else {
-                loadingElement.classList.add('hidden');
-            }
-            
-            // Add content if provided
-            if (content) {
-                const existingContent = contentElement.querySelector('.text-content, .image-content');
-                if (existingContent) {
-                    existingContent.remove();
-                }
-                contentElement.appendChild(content);
-            }
-        }
-
-        function createTextContent(text) {
+        function createLoadingElement(message) {
             const div = document.createElement('div');
-            div.className = 'text-content';
-            div.textContent = text;
+            div.className = 'status';
+            div.innerHTML = `<span class="loading"></span>${message}`;
             return div;
         }
 
-        function createImageContent(imageUrl) {
+        function createSuccessElement(message) {
             const div = document.createElement('div');
-            div.className = 'image-content';
-            div.innerHTML = `<img src="${imageUrl}" alt="Generated image" />`;
+            div.className = 'success';
+            div.textContent = message;
             return div;
         }
 
-        function createErrorContent(message) {
+        function createErrorElement(message) {
             const div = document.createElement('div');
             div.className = 'error';
             div.textContent = `Error: ${message}`;
             return div;
         }
 
-         async function getRunwareApiKey() {
-             const runwareKeyElement = document.getElementById('runwareKey');
-             let runwareKey = '';
-             
-             console.log('Getting Runware API key...');
-             console.log('Runware key element found:', !!runwareKeyElement);
-             
-             // Check if field exists and is not disabled, then get the value
-             if (runwareKeyElement && !runwareKeyElement.disabled) {
-                 runwareKey = runwareKeyElement.value.trim();
-                 console.log('Using manually entered key, length:', runwareKey.length);
-             }
-             
-             // If no key provided, try local config first
-             if (!runwareKey && window.LOCAL_CONFIG && window.LOCAL_CONFIG.RUNWARE_API_KEY) {
-                 runwareKey = window.LOCAL_CONFIG.RUNWARE_API_KEY;
-                 console.log('Using Runware API key from local config, length:', runwareKey.length);
-             }
-             
-             // If still no key, try to get from server (environment variable)
-             if (!runwareKey || (runwareKeyElement && runwareKeyElement.disabled)) {
-                 console.log('Attempting to fetch key from server...');
-                 try {
-                     const response = await fetch('/api/runware-key');
-                     console.log('Server response status:', response.status);
-                     if (response.ok) {
-                         const data = await response.json();
-                         if (data.apiKey) {
-                             runwareKey = data.apiKey;
-                             console.log('Using Runware API key from environment variable, length:', runwareKey.length);
-                         }
-                     }
-                 } catch (error) {
-                     console.log('Could not fetch Runware key from server:', error.message);
-                 }
-             }
-             
-             if (!runwareKey) {
-                 console.error('No Runware API key found');
-                 throw new Error('Runware API key is required. Please enter it in the field above, set it in config.js, or set RUNWARE_API_KEY environment variable.');
-             }
-             
-             return runwareKey;
+        async function getRunwareApiKey() {
+            let runwareKey = '';
+            
+            console.log('Getting Runware API key...');
+            
+            // Try local config first
+            if (window.LOCAL_CONFIG && window.LOCAL_CONFIG.RUNWARE_API_KEY) {
+                runwareKey = window.LOCAL_CONFIG.RUNWARE_API_KEY;
+                console.log('Using Runware API key from local config, length:', runwareKey.length);
+            }
+            
+            // If no key, try to get from server (environment variable)
+            if (!runwareKey) {
+                console.log('Attempting to fetch key from server...');
+                try {
+                    const response = await fetch('/api/runware-key');
+                    console.log('Server response status:', response.status);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.apiKey) {
+                            runwareKey = data.apiKey;
+                            console.log('Using Runware API key from environment variable, length:', runwareKey.length);
+                        }
+                    }
+                } catch (error) {
+                    console.log('Could not fetch Runware key from server:', error.message);
+                }
+            }
+            
+            if (!runwareKey) {
+                console.error('No Runware API key found');
+                throw new Error('Runware API key is required. Please set it in config.js for local development or set RUNWARE_API_KEY environment variable for deployment.');
+            }
+            
+            return runwareKey;
         }
 
         // Generate UUID v4
@@ -489,15 +424,13 @@
                     }
                 }
             } catch (serverError) {
-                console.log('Server-side generation not available, trying direct API:', serverError.message);
+                console.log('Server-side generation not available, falling back to client-side:', serverError.message);
             }
-            
+
             // Fallback to direct API call (for local development)
             const apiKey = await getRunwareApiKey();
-            
+
             try {
-                console.log('Trying direct Runware API call with UUID:', imageParams.taskUUID);
-                
                 const response = await fetch('https://api.runware.ai/v1', {
                     method: 'POST',
                     headers: {
@@ -509,43 +442,31 @@
 
                 if (!response.ok) {
                     const errorData = await response.text();
-                    console.error('Direct API call failed:', response.status, errorData);
-                    
-                    // Retry once on 500 errors
                     if (response.status === 500 && retryCount === 0) {
-                        console.log('Got 500 error, retrying once...');
-                        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+                        console.log('Retrying due to 500 error...');
                         return generateImage(prompt, 1);
                     }
-                    
                     throw new Error(`Runware API error: ${response.status} - ${errorData}`);
                 }
 
                 const data = await response.json();
-                console.log('Runware direct API response:', data);
+                console.log('Runware API response:', data);
                 
-                // Response format: { "data": [{ "taskType": "imageInference", "imageURL": "...", ... }] }
                 if (data && data.data && Array.isArray(data.data) && data.data.length > 0) {
                     const result = data.data[0];
                     if (result.imageURL) {
-                        console.log('Image generated successfully:', result.imageURL);
                         return result.imageURL;
                     } else if (result.imageDataURI) {
-                        console.log('Image generated as data URI');
                         return result.imageDataURI;
                     } else if (result.imageBase64Data) {
-                        console.log('Image generated as base64');
-                        return `data:image/jpeg;base64,${result.imageBase64Data}`;
-                    } else {
-                        console.error('No image URL found in result:', result);
-                        throw new Error('No image URL in response');
+                        return `data:image/webp;base64,${result.imageBase64Data}`;
                     }
+                    throw new Error('No image URL in response');
                 } else {
-                    console.error('Unexpected response format:', data);
                     throw new Error('Invalid response format from Runware API');
                 }
             } catch (error) {
-                console.error('Image generation failed:', error);
+                console.error('Image generation error:', error);
                 throw new Error(`Image generation failed: ${error.message}. Note: Runware may require their SDK for API access.`);
             }
         }
@@ -582,16 +503,16 @@
             }
 
             // Fallback to client-side API call (for local development)
-            let openrouterKey = document.getElementById('openrouterKey').value.trim();
+            let openrouterKey = '';
             
-            // Try local config if no manual entry
-            if (!openrouterKey && window.LOCAL_CONFIG && window.LOCAL_CONFIG.OPENROUTER_API_KEY) {
+            // Try local config first
+            if (window.LOCAL_CONFIG && window.LOCAL_CONFIG.OPENROUTER_API_KEY) {
                 openrouterKey = window.LOCAL_CONFIG.OPENROUTER_API_KEY;
                 console.log('Using OpenRouter API key from local config');
             }
             
             if (!openrouterKey) {
-                throw new Error('OpenRouter API key is required. Please enter it in the field above, set it in config.js, or set OPENROUTER_API_KEY environment variable for deployment.');
+                throw new Error('OpenRouter API key is required. Please set it in config.js for local development or set OPENROUTER_API_KEY environment variable for deployment.');
             }
 
             try {
@@ -601,20 +522,20 @@
                         'Authorization': `Bearer ${openrouterKey}`,
                         'Content-Type': 'application/json',
                         'HTTP-Referer': window.location.origin,
-                        'X-Title': 'AI Telephone Game'
+                        'X-Title': 'AI Telephone'
                     },
                     body: JSON.stringify({
                         model: selectedTextModel,
                         messages: [
                             {
-                                role: 'user',
+                                role: "user",
                                 content: [
                                     {
-                                        type: 'text',
-                                        text: 'This image was created by an AI image generator. Give your best guess at the prompt used. Include no other text, your only output should be your guess about the prompt that generated the image.'
+                                        type: "text",
+                                        text: "This image was created by an AI image generator. Give your best guess at the prompt used. Include no other text, your only output should be your guess about the prompt that generated the image."
                                     },
                                     {
-                                        type: 'image_url',
+                                        type: "image_url",
                                         image_url: {
                                             url: imageUrl
                                         }
@@ -628,245 +549,141 @@
                 });
 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`OpenRouter API error: ${errorData.error?.message || response.statusText}`);
+                    const errorData = await response.text();
+                    throw new Error(`OpenRouter API error: ${response.status} - ${errorData}`);
                 }
 
                 const data = await response.json();
-                if (data.choices && data.choices.length > 0) {
+                console.log('OpenRouter API response:', data);
+                
+                if (data.choices && data.choices[0] && data.choices[0].message) {
                     return data.choices[0].message.content.trim();
                 } else {
-                    throw new Error('No response from OpenRouter API');
+                    throw new Error('Invalid response format from OpenRouter API');
                 }
             } catch (error) {
-                console.error('Image analysis failed:', error);
+                console.error('Image analysis error:', error);
                 throw new Error(`Image analysis failed: ${error.message}`);
             }
         }
 
-        async function startTelephoneGame() {
+        async function startGame() {
             const initialPrompt = document.getElementById('initialPrompt').value.trim();
             
             if (!initialPrompt) {
-                alert('Please enter an initial prompt');
+                alert('Please enter a starting prompt!');
                 return;
             }
 
-            // Disable the start button
-            const startButton = document.getElementById('startGame');
+            if (gameInProgress) {
+                return;
+            }
+
+            gameInProgress = true;
+            const startButton = document.getElementById('startButton');
+            const gameArea = document.getElementById('gameArea');
+            
             startButton.disabled = true;
             startButton.textContent = 'Game in Progress...';
-
-            // Show game area
-            const gameArea = document.getElementById('gameArea');
-            gameArea.classList.remove('hidden');
             gameArea.innerHTML = '';
 
-            // Reset game state
-            gameState.currentStep = 0;
-            gameState.steps = [];
+            let currentPrompt = initialPrompt;
+            const results = [];
 
             try {
-                // Test API key availability
-                console.log('Testing API key availability...');
-                await getRunwareApiKey();
-                console.log('API key validated successfully');
-
-                // Create all step elements
-                for (let i = 0; i < 4; i++) {
-                    const imageStep = createStepElement(i * 2, 'image', `Step ${i + 1}: Generate Image`);
-                    const textStep = createStepElement(i * 2 + 1, 'text', `Step ${i + 1}: Analyze Image`);
+                for (let i = 1; i <= 4; i++) {
+                    console.log(`Starting step ${i} with prompt:`, currentPrompt);
                     
-                    gameArea.appendChild(imageStep);
-                    gameArea.appendChild(textStep);
-                }
+                    // Create step container
+                    const stepDiv = document.createElement('div');
+                    stepDiv.className = 'step';
+                    stepDiv.innerHTML = `
+                        <h3><span class="step-number">${i}</span>Step ${i}</h3>
+                        <div class="prompt">
+                            <strong>Prompt:</strong> "${currentPrompt}"
+                        </div>
+                    `;
+                    gameArea.appendChild(stepDiv);
 
-                // Run the telephone loop
-                let currentPrompt = initialPrompt;
-                
-                for (let i = 0; i < 4; i++) {
-                    const imageStepNum = i * 2;
-                    const textStepNum = i * 2 + 1;
+                    // Generate image
+                    const imageLoadingDiv = createLoadingElement('Generating image...');
+                    stepDiv.appendChild(imageLoadingDiv);
 
                     try {
-                        // Generate image
-                        updateStepStatus(imageStepNum, 'processing');
                         const imageUrl = await generateImage(currentPrompt);
-                        const imageContent = createImageContent(imageUrl);
-                        updateStepStatus(imageStepNum, 'complete', imageContent);
+                        stepDiv.removeChild(imageLoadingDiv);
+                        
+                        const imageDiv = document.createElement('div');
+                        imageDiv.innerHTML = `<img src="${imageUrl}" alt="Generated image for step ${i}">`;
+                        stepDiv.appendChild(imageDiv);
+                        
+                        stepDiv.appendChild(createSuccessElement('Image generated successfully!'));
 
                         // Analyze image
-                        updateStepStatus(textStepNum, 'processing');
-                        const analyzedPrompt = await analyzeImage(imageUrl);
-                        const textContent = createTextContent(analyzedPrompt);
-                        updateStepStatus(textStepNum, 'complete', textContent);
+                        const analysisLoadingDiv = createLoadingElement('Analyzing image...');
+                        stepDiv.appendChild(analysisLoadingDiv);
 
-                        // Update prompt for next iteration
+                        const analyzedPrompt = await analyzeImage(imageUrl);
+                        stepDiv.removeChild(analysisLoadingDiv);
+                        
+                        const analysisDiv = document.createElement('div');
+                        analysisDiv.className = 'prompt';
+                        analysisDiv.innerHTML = `<strong>AI Analysis:</strong> "${analyzedPrompt}"`;
+                        stepDiv.appendChild(analysisDiv);
+                        
+                        stepDiv.appendChild(createSuccessElement('Analysis complete!'));
+
+                        // Store results
+                        results.push({
+                            step: i,
+                            inputPrompt: currentPrompt,
+                            imageUrl: imageUrl,
+                            analyzedPrompt: analyzedPrompt
+                        });
+
+                        // Set up for next iteration
                         currentPrompt = analyzedPrompt;
 
                     } catch (error) {
-                        console.error(`Error in step ${i + 1}:`, error);
-                        
-                        // Mark current step as error
-                        if (error.message.includes('Image generation')) {
-                            updateStepStatus(imageStepNum, 'error', createErrorContent(error.message));
-                        } else {
-                            updateStepStatus(textStepNum, 'error', createErrorContent(error.message));
-                        }
-
-                        // Stop the game on error
-                        break;
+                        stepDiv.removeChild(imageLoadingDiv);
+                        stepDiv.appendChild(createErrorElement(error.message));
+                        throw error;
                     }
                 }
 
+                // Show final results
+                const finalDiv = document.createElement('div');
+                finalDiv.className = 'final-result';
+                finalDiv.innerHTML = `
+                    <h2>🎉 Game Complete!</h2>
+                    <p>Here's how your prompt evolved through 4 rounds of AI telephone:</p>
+                    <div class="comparison">
+                        <div>
+                            <h4>Original Prompt</h4>
+                            <p>"${initialPrompt}"</p>
+                        </div>
+                        <div>
+                            <h4>Final Result</h4>
+                            <p>"${results[results.length - 1].analyzedPrompt}"</p>
+                        </div>
+                    </div>
+                `;
+                gameArea.appendChild(finalDiv);
+
             } catch (error) {
-                console.error('Game initialization failed:', error);
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'error';
-                errorDiv.textContent = `Failed to start game: ${error.message}`;
-                gameArea.appendChild(errorDiv);
+                console.error('Game error:', error);
+                gameArea.appendChild(createErrorElement(`Failed to start game: ${error.message}`));
             } finally {
-                // Re-enable the start button
+                gameInProgress = false;
                 startButton.disabled = false;
                 startButton.textContent = 'Start Telephone Game';
             }
         }
 
-        // Auto-fill API keys from local config if available
-        function autoFillLocalConfig() {
-            if (window.LOCAL_CONFIG && window.LOCAL_CONFIG.AUTO_FILL_KEYS) {
-                const runwareInput = document.getElementById('runwareKey');
-                const openrouterInput = document.getElementById('openrouterKey');
-                
-                if (window.LOCAL_CONFIG.RUNWARE_API_KEY && runwareInput && !runwareInput.value) {
-                    runwareInput.value = window.LOCAL_CONFIG.RUNWARE_API_KEY;
-                    console.log('Auto-filled Runware API key from config.js');
-                }
-                
-                if (window.LOCAL_CONFIG.OPENROUTER_API_KEY && openrouterInput && !openrouterInput.value) {
-                    openrouterInput.value = window.LOCAL_CONFIG.OPENROUTER_API_KEY;
-                    console.log('Auto-filled OpenRouter API key from config.js');
-                }
-                
-                // Update status message
-                const apiKeySection = document.querySelector('.api-key-section');
-                const existingStatus = apiKeySection.querySelector('.config-status');
-                if (!existingStatus) {
-                    const statusP = document.createElement('p');
-                    statusP.className = 'config-status';
-                    statusP.innerHTML = '<strong>✅ Local Config:</strong> API keys loaded from config.js';
-                    statusP.style.color = '#27ae60';
-                    statusP.style.marginTop = '10px';
-                    statusP.style.fontWeight = '500';
-                    apiKeySection.appendChild(statusP);
-                }
-            }
-        }
-
-        // Check deployment environment and configure UI accordingly
+        // Initialize the game when page loads
         window.addEventListener('load', async function() {
-            console.log('AI Telephone Game loaded.');
-            
-            // Auto-fill from local config first
-            autoFillLocalConfig();
-            
-            // Check if we're in a deployment environment with server-side functions
-            try {
-                const configResponse = await fetch('/api/config');
-                if (configResponse.ok) {
-                    const config = await configResponse.json();
-                    
-                     // Update UI based on server-side configuration
-                     const apiKeySection = document.querySelector('.api-key-section');
-                     const heading = apiKeySection.querySelector('h3');
-                     
-                     if (config.hasOpenRouterKey && config.hasRunwareKey) {
-                         heading.innerHTML = '✅ API Keys Configured';
-                         heading.style.color = '#27ae60';
-                         
-                         // Update placeholders but keep the input fields
-                         const openrouterInput = document.getElementById('openrouterKey');
-                         const runwareInput = document.getElementById('runwareKey');
-                         
-                         if (openrouterInput) {
-                             openrouterInput.placeholder = 'Using environment variable (OPENROUTER_API_KEY)';
-                             openrouterInput.disabled = true;
-                         }
-                         if (runwareInput) {
-                             runwareInput.placeholder = 'Using environment variable (RUNWARE_API_KEY)';
-                             runwareInput.disabled = true;
-                         }
-                         
-                         // Add status message
-                         const statusP = document.createElement('p');
-                         statusP.innerHTML = '<strong>Status:</strong> Both API keys configured via environment variables. Ready to play!';
-                         statusP.style.color = '#27ae60';
-                         statusP.style.fontWeight = '500';
-                         apiKeySection.appendChild(statusP);
-                         
-                     } else if (config.hasOpenRouterKey && !config.hasRunwareKey) {
-                         heading.innerHTML = '⚠️ Partial Configuration';
-                         heading.style.color = '#f39c12';
-                         
-                         const openrouterInput = document.getElementById('openrouterKey');
-                         if (openrouterInput) {
-                             openrouterInput.placeholder = 'Using environment variable (OPENROUTER_API_KEY)';
-                             openrouterInput.disabled = true;
-                         }
-                         
-                         // Add status message
-                         const statusP = document.createElement('p');
-                         statusP.innerHTML = '<strong>OpenRouter:</strong> ✅ Configured via environment variable<br><strong>Runware:</strong> ❌ Please enter your API key above';
-                         statusP.style.color = '#666';
-                         apiKeySection.appendChild(statusP);
-                         
-                     } else if (!config.hasOpenRouterKey && config.hasRunwareKey) {
-                         heading.innerHTML = '⚠️ Partial Configuration';
-                         heading.style.color = '#f39c12';
-                         
-                         const runwareInput = document.getElementById('runwareKey');
-                         if (runwareInput) {
-                             runwareInput.placeholder = 'Using environment variable (RUNWARE_API_KEY)';
-                             runwareInput.disabled = true;
-                         }
-                         
-                         // Add status message
-                         const statusP = document.createElement('p');
-                         statusP.innerHTML = '<strong>OpenRouter:</strong> ❌ Please enter your API key above<br><strong>Runware:</strong> ✅ Configured via environment variable';
-                         statusP.style.color = '#666';
-                         apiKeySection.appendChild(statusP);
-                         
-                     } else {
-                         // No environment variables detected, keep the default form
-                         const statusP = document.createElement('p');
-                         statusP.innerHTML = '<strong>Status:</strong> Local development mode. Please enter your API keys above.';
-                         statusP.style.color = '#666';
-                         apiKeySection.appendChild(statusP);
-                     }
-                    
-                    console.log('Deployment environment detected with server-side configuration.');
-                } else {
-                    console.log('Local development environment. Please enter your API keys manually.');
-                    
-                    // Add local development status message
-                    const apiKeySection = document.querySelector('.api-key-section');
-                    const statusP = document.createElement('p');
-                    statusP.innerHTML = '<strong>Status:</strong> Local development mode. Please enter your API keys above.';
-                    statusP.style.color = '#666';
-                    statusP.style.marginTop = '10px';
-                    apiKeySection.appendChild(statusP);
-                }
-            } catch (error) {
-                console.log('Local development environment. Please enter your API keys manually.');
-                
-                // Add local development status message
-                const apiKeySection = document.querySelector('.api-key-section');
-                const statusP = document.createElement('p');
-                statusP.innerHTML = '<strong>Status:</strong> Local development mode. Please enter your API keys above.';
-                statusP.style.color = '#666';
-                statusP.style.marginTop = '10px';
-                apiKeySection.appendChild(statusP);
-            }
+            console.log('AI Telephone loaded.');
+            console.log('API keys will be loaded from config.js (local) or environment variables (deployment)');
         });
     </script>
 </body>
