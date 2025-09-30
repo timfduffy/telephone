@@ -17,7 +17,7 @@ export async function onRequest({ request, env }) {
   }
 
   try {
-    const { imageUrl } = await request.json();
+    const { imageUrl, textModel } = await request.json();
     
     if (!imageUrl) {
       return new Response(JSON.stringify({ error: 'Image URL is required' }), {
@@ -51,7 +51,7 @@ export async function onRequest({ request, env }) {
         'X-Title': 'AI Telephone Game'
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-exp',
+        model: textModel || 'google/gemini-2.5-flash',
         messages: [
           {
             role: 'user',
