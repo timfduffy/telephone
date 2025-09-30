@@ -441,6 +441,14 @@
             // Get selected model and configure parameters
             const selectedModel = document.getElementById('imageModel').value;
             const isFlux = selectedModel === 'runware:100@1';
+            const isHiDream = selectedModel === 'runware:97@3';
+            
+            let steps = 20; // Default for Qwen-Image
+            if (isFlux) {
+                steps = 4;
+            } else if (isHiDream) {
+                steps = 16;
+            }
             
             const imageParams = {
                 taskType: "imageInference",
@@ -451,9 +459,9 @@
                 width: isFlux ? 1024 : 512,
                 numberResults: 1,
                 outputType: ["URL"],
-                outputFormat: "JPEG",
+                outputFormat: "WEBP",
                 CFGScale: 2.5,
-                steps: isFlux ? 4 : 20,
+                steps: steps,
                 scheduler: "Default",
                 includeCost: true,
                 outputQuality: 85

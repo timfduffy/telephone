@@ -53,15 +53,15 @@ export async function onRequest({ request, env }) {
     const defaultParams = {
       taskType: "imageInference",
       taskUUID: generateUUID(),
-      model: "runware:108@1",
+      model: "runware:97@3", // Default to HiDream
       positivePrompt: prompt,
       height: 512,
       width: 512,
       numberResults: 1,
       outputType: ["URL"],
-      outputFormat: "JPEG",
+      outputFormat: "WEBP",
       CFGScale: 2.5,
-      steps: 20,
+      steps: 16, // Default steps for HiDream
       scheduler: "Default",
       includeCost: true,
       outputQuality: 85
